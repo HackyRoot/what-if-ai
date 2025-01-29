@@ -11,9 +11,14 @@ export const ImageDisplay = ({ base64Image, isLoading }: ImageDisplayProps) => {
 
   if (isLoading) {
     return (
-      <div className="w-full h-[400px] rounded-lg glass-panel flex items-center justify-center">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full h-[400px] rounded-lg glass-panel flex items-center justify-center"
+      >
         <div className="animate-pulse text-lg text-gray-500">Generating your imagination...</div>
-      </div>
+      </motion.div>
     );
   }
 

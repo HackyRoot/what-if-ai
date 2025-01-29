@@ -73,26 +73,26 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12">
       <motion.div
         layout
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="text-center space-y-4 max-w-2xl mx-auto mb-12"
+        className="text-center space-y-4 max-w-3xl mx-auto mb-12"
       >
         <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl">
-          WhatIf..AI
+          WhatIf.ai
         </h1>
         <p className="text-lg text-gray-600">
           Reimagine your favorite stories with AI-powered alternate endings
         </p>
       </motion.div>
 
-      <div className={`max-w-7xl mx-auto ${base64Image ? 'grid grid-cols-1 lg:grid-cols-2 gap-8' : ''}`}>
+      <div className={`container mx-auto px-4 ${isGeneratingImage || base64Image ? 'grid grid-cols-1 lg:grid-cols-2 gap-12' : 'max-w-2xl'}`}>
         <motion.div
           layout
-          className="space-y-8 max-w-2xl mx-auto lg:max-w-none"
+          className="space-y-8"
           transition={{ duration: 0.5 }}
         >
           <StoryForm onSubmit={generatePrompt} isLoading={isGeneratingPrompt} />
@@ -107,7 +107,7 @@ const Index = () => {
           )}
         </motion.div>
 
-        {(base64Image || isGeneratingImage) && (
+        {(isGeneratingImage || base64Image) && (
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
