@@ -99,11 +99,6 @@ async def generate_text_message(content_name: str, ending_description: str, req:
         print("Text Response Status:", text_response.status_code)
         print("Text Response Content:", text_response.text)
 
-        if text_response.status_code != 200:
-            print(f"Text generation error: {text_response.text}")
-            raise HTTPException(
-                status_code=500, detail="Failed to generate text")
-
         response_json = text_response.json()
         generated_text = response_json["result"]["response"]
         return generated_text
