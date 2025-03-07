@@ -17,7 +17,7 @@ const Index = () => {
     setIsGeneratingPrompt(true);
     setContentName(name);
     try {
-      const response = await fetch("https://what-if-ai.steveparmar6nov2011.workers.dev/generate-text", {
+      const response = await fetch(import.meta.env.VITE_GENERATE_TEXT_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -46,7 +46,7 @@ const Index = () => {
   const generateImage = async () => {
     setIsGeneratingImage(true);
     try {
-      const response = await fetch("https://what-if-ai.steveparmar6nov2011.workers.dev/generate-image", {
+      const response = await fetch(import.meta.env.VITE_GENERATE_IMAGE_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
