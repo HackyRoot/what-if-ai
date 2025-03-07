@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import base64
 import httpx
-from prompts import text_generation_prompt
+from prompts import text_generation_system_prompt
 
 
 async def on_fetch(request, env):
@@ -71,7 +71,7 @@ async def generate_text_message(content_name: str, ending_description: str, req:
         str: A detailed prompt for image generation model.
     """
     messages = [
-        {"role": "system", "content": text_generation_prompt},
+        {"role": "system", "content": text_generation_system_prompt},
         {"role": "user", "content": f"""
             Content Name: {content_name}
             Alternative Ending: {ending_description}"""}
@@ -125,9 +125,13 @@ async def generate_image(prompt: str, req: Request):
     }
 
     input_data = {"prompt": prompt, "steps": 8}
-    async with httpx.AsyncClient() as client:
-        response = await client.post(f"{API_BASE_URL}/{IMAGE_GEN_MODEL}", headers=headers, json=input_data, timeout=60.0)
-    return response.json()
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(f"{API_BASE_URL}/{IMAGE_GEN_MODEL}", headers=headers, json=input_data, timeout=60.0)
+        return response.json()
+    except Exception as e:
+        print(f"Error in generation: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post('/generate-text')
