@@ -1,5 +1,4 @@
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import base64
 import httpx
@@ -15,15 +14,6 @@ TEXT_GEN_MODEL = "@hf/meta-llama/meta-llama-3-8b-instruct"
 IMAGE_GEN_MODEL = "@cf/black-forest-labs/flux-1-schnell"
 
 app = FastAPI()
-
-# Enable CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 
 class GenerateTextRequest(BaseModel):
