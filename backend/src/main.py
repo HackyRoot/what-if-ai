@@ -1,9 +1,8 @@
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import base64
 import httpx
-from prompts import text_generation_prompt
+from prompts import text_generation_system_prompt
 
 
 async def on_fetch(request, env):
@@ -15,15 +14,6 @@ TEXT_GEN_MODEL = "@hf/meta-llama/meta-llama-3-8b-instruct"
 IMAGE_GEN_MODEL = "@cf/black-forest-labs/flux-1-schnell"
 
 app = FastAPI()
-
-# Enable CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 
 class GenerateTextRequest(BaseModel):
@@ -71,7 +61,7 @@ async def generate_text_message(content_name: str, ending_description: str, req:
         str: A detailed prompt for image generation model.
     """
     messages = [
-        {"role": "system", "content": text_generation_prompt},
+        {"role": "system", "content": text_generation_system_prompt},
         {"role": "user", "content": f"""
             Content Name: {content_name}
             Alternative Ending: {ending_description}"""}
@@ -99,11 +89,6 @@ async def generate_text_message(content_name: str, ending_description: str, req:
         print("Text Response Status:", text_response.status_code)
         print("Text Response Content:", text_response.text)
 
-        if text_response.status_code != 200:
-            print(f"Text generation error: {text_response.text}")
-            raise HTTPException(
-                status_code=500, detail="Failed to generate text")
-
         response_json = text_response.json()
         generated_text = response_json["result"]["response"]
         return generated_text
@@ -125,9 +110,13 @@ async def generate_image(prompt: str, req: Request):
     }
 
     input_data = {"prompt": prompt, "steps": 8}
-    async with httpx.AsyncClient() as client:
-        response = await client.post(f"{API_BASE_URL}/{IMAGE_GEN_MODEL}", headers=headers, json=input_data, timeout=60.0)
-    return response.json()
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(f"{API_BASE_URL}/{IMAGE_GEN_MODEL}", headers=headers, json=input_data, timeout=60.0)
+        return response.json()
+    except Exception as e:
+        print(f"Error in generation: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post('/generate-text')
